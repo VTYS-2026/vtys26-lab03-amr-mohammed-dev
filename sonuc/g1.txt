@@ -1,0 +1,55 @@
+============================================================
+GOREV 1 - ANOMALi KANiTI  |  Ogrenci: 240541612
+============================================================
+
+--- 1.1 Guncelleme Anomalisi: Egitmen Satir Tekrari ---
+
+Sorgu sonucu (egitmen_ad'a gore GROUP BY, satir_sayisi DESC):
+
+ egitmen_ad    | satir_sayisi
+---------------+-------------
+ Ahmet Yilmaz  |     8
+ Mehmet Kaya   |     6
+ Zeynep Arslan |     6
+ Fatma Demir   |     5
+
+Yorum:
+Ahmet Yilmaz'in adi duz_kayitlar tablosunda 8 satirda tekrar etmektedir.
+Eger bu egitmenin soyadi degisirse (ornegin evlilik nedeniyle), veritabanindaki
+8 satirin TAMAMINI ayri ayri guncellemek gerekir. Bu satirlardan birini
+guncellemeyi unutursak, tabloda hem eski hem yeni ad bulunur ve tutarsizlik
+olusur. Normalizasyonla bu sorun kokuunden cozulur: egitmenler tablosunda
+tek satirda degisiklik yapmak yeterlidir.
+
+--- 1.2 Tutarsizlik: Birden Fazla Ucrete Sahip Dersler ---
+
+Sorgu sonucu (HAVING COUNT(DISTINCT ucret) > 1):
+
+ ders_id | ders_ad      | farkli_ucret_sayisi | en_dusuk | en_yuksek
+---------+--------------+---------------------+----------+----------
+    1    | Sabah Yogasi |          2          |  150.00  |  160.00
+    3    | CrossFit Pro |          2          |  240.00  |  250.00
+
+Yorum:
+Tutarsizlik zaten baslamis! Sabah Yogasi dersi bazi satirlarda 150 TL,
+bazilerinde 160 TL olarak kayitli. CrossFit Pro'da da benzer durum var:
+240 TL ile 250 TL. Bu tam anlamiyla guncelleme anomalisidir; eger ucret
+guncellenirken butun satirlar tek seferde degistirilmezse farkli degerler
+tabloda karisik halde yasaiyor. 3NF sema ile ucret yalnizca dersler
+tablosunda tek bir satirda tutulur, tutarsizlik imkansiz hale gelir.
+
+--- Silme Anomalisi Ornegi ---
+
+duz_kayitlar tablosunda Pilates Baslangic dersini alan uyeler sunlardir:
+Ali Sahin (1001), Burak Celik (1003), Canan Oz (1004),
+Emre Dogan (1006) ve Hande Acar (1009).
+
+Simdi bu bes uyenin Pilates kayitlarini (kayit_id: 2, 6, 10, 15, 23)
+sildigimizi dusuneyin. Bu satirlari sildikten sonra tabloda
+'Pilates Baslangic' dersine ait HiCBiR bilgi kalmaz:
+egitmeni Fatma Demir'in bransina (Pilates) dair kayit,
+Kucuk Salon'un kapasitesi ve 200 TL ucret tamamen yok olur.
+Ders hicbir zaman var olmamis gibi gorunur. Henuz kaydi bulunmayan
+yeni bir dersi de sisteme yazmak mumkun degildir, cunku her satir
+bir kayit zorunlulugu tasir. Normalizasyonla bu sorun ortadan kalkar:
+dersler tablosu kayitlardan bagimsiz varligini surdurebilir.

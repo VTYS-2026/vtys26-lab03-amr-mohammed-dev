@@ -1,0 +1,30 @@
+============================================================
+MEYDAN OKUMA - BONUS  |  Ogrenci: 240541612
+============================================================
+
+--- Yapilan islem ---
+
+kayitlar tablosuna UNIQUE(uye_id, ders_id) kisiti eklendi.
+Bu kisit sayesinde ayni uye, ayni derse iki kez kayit yaptiramiyor.
+
+ALTER TABLE kayitlar ADD CONSTRAINT uq_uye_ders UNIQUE (uye_id, ders_id);
+
+--- Test: Mevcut kaydi tekrar eklemeye calisma ---
+
+Asagidaki INSERT komutu denendi:
+Ali Sahin (uye_id=1001) zaten Sabah Yogasi'na (ders_id=1) kayitli.
+
+INSERT INTO kayitlar (uye_id, ders_id, tarih) VALUES (1001, 1, '2024-12-01');
+
+--- psql Hata Mesaji ---
+
+ERROR:  duplicate key value violates unique constraint "uq_uye_ders"
+DETAIL:  Key (uye_id, ders_id)=(1001, 1) already exists.
+
+--- Yorum ---
+
+Kisit basariyla calisiyordu. duz_kayitlar tablosunda ayni uye
+ayni derse defalarca eklenebilirdi ve sistem hata vermezdi.
+Temiz semada bu kisit ile bu durum artik veritabani seviyesinde
+engellenmektedir; uygulama katmanindaki bir hatayi veritabani
+kurali olarak garantiye almis oluyoruz.

@@ -1,0 +1,48 @@
+============================================================
+GOREV 4 - KAZANCI KANiTLA  |  Ogrenci: 240541612
+============================================================
+
+--- 4.1 Satir Sayisi Karsilastirmasi ---
+
+Sorgu:
+SELECT
+    (SELECT COUNT(*) FROM duz_kayitlar) AS duz_tablo_satir_sayisi,
+    (SELECT COUNT(*) FROM kayitlar)     AS temiz_tablo_satir_sayisi;
+
+Sonuc:
+ duz_tablo_satir_sayisi | temiz_tablo_satir_sayisi
+------------------------+-------------------------
+           25           |           25
+(1 row)
+
+Yorum: iki sayi birbirine esit, yani tasimadam veri kaybi olmamistir.
+
+--- 4.2 Egitmen Adi Guncelleme Karsilastirmasi ---
+
+Adim 1 - duz_kayitlar'da guncelleme (Ahmet Yilmaz 8 satirda geciyordu):
+
+UPDATE duz_kayitlar
+SET egitmen_ad = 'Ahmet Y. (guncellendi)'
+WHERE egitmen_ad = 'Ahmet Yilmaz';
+
+psql ciktisi:
+UPDATE 8
+
+---
+
+Adim 2 - Temiz semada guncelleme (egitmenler tablosunda tek satir):
+
+UPDATE egitmenler
+SET ad = 'Ahmet Y. (guncellendi)'
+WHERE ad = 'Ahmet Yilmaz';
+
+psql ciktisi:
+UPDATE 1
+
+---
+
+SONUC: Normalizasyonun ozeti bu iki satirda gizli.
+Kirli tabloda ayni degisiklik icin 8 satir guncellenmek zorunda,
+temiz semada ise sadece 1 satir yeterli.
+Kirli tabloda bir satiri guncellemeyi unutsaydik veri tutarsizlasirdi.
+Temiz semada bu hata yapilamaz.
